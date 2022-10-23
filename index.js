@@ -38,8 +38,6 @@ app.post("/register", urlencodedParser, (req, res) => {
     `INSERT INTO users (username,password,contactNumber) VALUES ('${username}','${password}','${contactNumber}')`
   );
 
-  console.log(username);
-
   setTimeout(function () {
     res.redirect("/login");
   }, 3000);

@@ -86,19 +86,16 @@ app.post("/register", urlencodedParser, (req, res) => {
     res.redirect("/login");
   }, 3000);
 });
-
-app.get("/welcome", (req, res) => {
-  res.sendFile(path.join(__dirname, "public/views/welcome.html"));
+const authCookieMiddleware = (req, res, next) => {
   const authCookie = req.cookies.accessToken;
 
   jwt.verify(authCookie, process.env.JWT_SECRET_KEY, (err, data) => {
-    if (err) {
-      res.redirect("/login");
-      console.log(err);
-    } else {
-      console.log(data);
-    }
+    if (err) return res.redirect("/login");
+    next();
   });
+};
+app.get("/welcome", authCookieMiddleware, (req, res) => {
+  res.sendFile(path.join(__dirname, "public/views/welcome.html"));
 });
 app.get("*", (req, res) => {
   // Here user can also design an

@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
+const cookieParser = require("cookie-parser");
 
 const PORT = 3002;
 
@@ -19,6 +20,8 @@ const pool = mysql.createPool({
 });
 
 app.use(express.static(__dirname + "/public"));
+app.use(cookieParser());
+
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.get("/login", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/index.html"));
@@ -43,10 +46,14 @@ app.post("/login", urlencodedParser, (req, res) => {
             console.log("pass match");
             console.log(user);
 
-            const token = jwt.sign(user, process.env.JWT_SECRET_KEY, {
+            const token = jwt.sign({ user }, process.env.JWT_SECRET_KEY, {
               expiresIn: "1h",
             });
             console.log(token);
+            res.cookie("accessToken", token, {
+              httpOnly: true,
+            });
+            res.redirect("/welcome");
           } else {
             console.log("err pass no match");
           }

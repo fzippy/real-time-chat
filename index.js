@@ -62,7 +62,7 @@ app.post("/login", urlencodedParser, (req, res) => {
           }
         });
       }
-      console.log(hashedp);
+      // console.log(hashedp);
     }
   );
 });
@@ -79,7 +79,6 @@ app.post("/register", urlencodedParser, (req, res) => {
     pool.query(
       `INSERT INTO users (username,password,contactNumber) VALUES ('${username}','${hash}','${contactNumber}')`
     );
-    console.log(hash);
   });
 
   setTimeout(function () {
@@ -91,11 +90,18 @@ const authCookieMiddleware = (req, res, next) => {
 
   jwt.verify(authCookie, process.env.JWT_SECRET_KEY, (err, data) => {
     if (err) return res.redirect("/login");
+    req.data = data;
     next();
   });
 };
 app.get("/welcome", authCookieMiddleware, (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/welcome.html"));
+  console.log(req.data);
+  const authCookie = req.cookies.accessToken;
+
+  // jwt.verify(authCookie, process.env.JWT_SECRET_KEY, (err, data) => {
+  //   console.log(data);
+  // });
 });
 app.get("*", (req, res) => {
   // Here user can also design an

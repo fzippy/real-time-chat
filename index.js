@@ -31,7 +31,7 @@ app.post("/login", urlencodedParser, (req, res) => {
   const { username, rawPassword } = req.body;
 
   pool.query(
-    `SELECT username, password FROM users WHERE username = '${username}'`,
+    `SELECT id, username, password FROM users WHERE username = '${username}'`,
     (err, data) => {
       if (err) {
         console.error(err);
@@ -39,17 +39,20 @@ app.post("/login", urlencodedParser, (req, res) => {
       }
       const hashedp = data[0].password;
       const user = data[0].username;
-
+      const numbUID = data[0].id;
+      const UID = numbUID.toString();
       if (data.length > 0) {
         bcrypt.compare(rawPassword, hashedp, function (err, result) {
           if (result == true) {
-            console.log("pass match");
-            console.log(user);
-
-            const token = jwt.sign({ user }, process.env.JWT_SECRET_KEY, {
-              expiresIn: "1h",
-            });
-            console.log(token);
+            const payload = { user };
+            console.log(payload);
+            const token = jwt.sign(
+              { id: UID, user },
+              process.env.JWT_SECRET_KEY,
+              {
+                expiresIn: "1h",
+              }
+            );
             res.cookie("accessToken", token, {
               httpOnly: true,
             });
@@ -83,10 +86,12 @@ app.post("/register", urlencodedParser, (req, res) => {
     res.redirect("/login");
   }, 3000);
 });
+
 app.get("/welcome", (req, res) => {
   res.sendFile(path.join(__dirname, "public/views/welcome.html"));
   const authCookie = req.cookies.accessToken;
-  jwt.verify({authCookie}, process.env.JWT_SECRET_KEY, (err, data) => {
+
+  jwt.verify(authCookie, process.env.JWT_SECRET_KEY, (err, data) => {
     if (err) {
       res.redirect("/login");
       console.log(err);
@@ -94,7 +99,6 @@ app.get("/welcome", (req, res) => {
       console.log(data);
     }
   });
-  console.log(authCookie);
 });
 app.get("*", (req, res) => {
   // Here user can also design an

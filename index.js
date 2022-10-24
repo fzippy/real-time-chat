@@ -83,7 +83,19 @@ app.post("/register", urlencodedParser, (req, res) => {
     res.redirect("/login");
   }, 3000);
 });
-
+app.get("/welcome", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/views/welcome.html"));
+  const authCookie = req.cookies.accessToken;
+  jwt.verify({authCookie}, process.env.JWT_SECRET_KEY, (err, data) => {
+    if (err) {
+      res.redirect("/login");
+      console.log(err);
+    } else {
+      console.log(data);
+    }
+  });
+  console.log(authCookie);
+});
 app.get("*", (req, res) => {
   // Here user can also design an
   // error page and render it

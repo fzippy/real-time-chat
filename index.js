@@ -4,6 +4,9 @@ const path = require("path");
 const mysql = require("mysql");
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
+const jwt = require("jsonwebtoken");
+
 const PORT = 3002;
 
 const pool = mysql.createPool({
@@ -25,18 +28,25 @@ app.post("/login", urlencodedParser, (req, res) => {
   const { username, rawPassword } = req.body;
 
   pool.query(
-    `SELECT password FROM users WHERE username = '${username}'`,
+    `SELECT username, password FROM users WHERE username = '${username}'`,
     (err, data) => {
       if (err) {
         console.error(err);
         return;
       }
       const hashedp = data[0].password;
+      const user = data[0].username;
 
       if (data.length > 0) {
         bcrypt.compare(rawPassword, hashedp, function (err, result) {
           if (result == true) {
             console.log("pass match");
+            console.log(user);
+
+            const token = jwt.sign(user, process.env.JWT_SECRET_KEY, {
+              expiresIn: "1h",
+            });
+            console.log(token);
           } else {
             console.log("err pass no match");
           }

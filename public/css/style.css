@@ -27,3 +27,19 @@ ul li{
 ul li:hover{
     color: aqua;
 }
+main{
+    width: 100vw;
+    height: 100vh;
+    background: rgba(128, 128, 128, 0.123);
+    padding-top: 20px;
+}
+#contactForm{
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    margin: 0 auto;
+}
+input[type='text']{
+    margin: 10px 0;
+    padding: 5px 12px;
+}

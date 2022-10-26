@@ -1,18 +1,24 @@
 nav{
+    position: fixed;
+    top: 0;
+    left: 0;
     display: flex;
     flex-direction: column;
-    position: fixed;
-    width: 250px;
+    width: 0;
     background-color: grey;
     height: 100vh;
     transition: 0.5s;
+    z-index: 3;
+}
+#burger{
+    cursor: pointer;
 }
 ul li{
+    display: none;
     padding: 8px 8px 8px 32px;
     text-decoration: none;
     font-size: 18px;
     color: black;
-    display: block;
     transition: 0.3s;
     cursor: pointer;
 }

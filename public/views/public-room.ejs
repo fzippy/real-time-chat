@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type='text/css' href="css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <title>Document</title>
+</head>
+<body>
+    <header class="w-screen h-12 shadow-lg flex items-center p-2">
+        <img src="img/Burger.png" width="40px" id="burger">
+        <p class="text-center mx-auto" id="username">Welcome <%=data.username%></p>
+    </header>
+    <nav>
+        <img src="img/Burger.png" width="40px" id="burger2">
+        <ul id="navChildren">
+            <li><a href="">HOME</a></li>
+            <li><a href="">WEB CALL</a></li>
+            <li><a href="">SEND MSG TO USER</a></li>
+            <li><a href="">SEND TO NUMBER</a></li>
+        </ul>
+    </nav>
+    <main>
+        <div class="container">
+            <div class="msg-conatiner">
+                <ul>
+                    <li></li>
+                </ul>
+            </div>
+            <div style="display: flex; flex-direction: row;">
+                <input type="text" id="msgVal" name="data">
+                <input type="button" value="SEND" class="button" id="button">
+            </div>
+        </div>
+
+    </main>
+    <script src="js/nav.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const button = document.getElementById("button")
+        const msgVal = document.getElementById("msgVal")
+        const usernameRaw = document.getElementById("username")
+        const arr = usernameRaw.innerText.split(" ")
+        const user = arr[1]
+        console.log(user)
+        const addMessage = (user,msg)=>{
+            $(".msg-conatiner ul").append(`<li>${user}: ${msg}</li>`)
+        }
+        button.addEventListener("click", ()=>{
+            const msgdata = msgVal.value
+            addMessage(user,msgdata)
+            socket.emit('addMSG',{msg:msgdata,user:user})
+
+        })
+        socket.on("recieveMSG", (data)=>{
+            console.log()
+            addMessage(data.user,data.recieve)
+
+        })
+
+        // socket.on("connect", ()=>{
+        //     console.log("we are here")
+        // })
+    </script>
+</body>
+</html>

@@ -162,10 +162,14 @@ io.on("connection", (socket) => {
 
     socket.broadcast.emit("recieveMSG", { recieve: data.msg, user: data.user }); //
   });
+  socket.on("join_room", (data) => {
+    console.log(data.room);
+    socket.join(data.room);
+  });
   socket.on("privateMSG", (data) => {
-    socket.join(data.room)
-    socket.to(data.room).emit("recievePri8", { recieve: data.msg, user: data.user }); //
-
+    socket
+      .to(data.room)
+      .emit("recievePri8", { recieve: data.msg, user: data.user }); //
   });
 });
 

@@ -140,7 +140,7 @@ app.get("/private-room", authCookieMiddleware, (req, res) => {
     (err, results) => {
       const dataResults = results[0];
 
-      res.render("public-room", { data: dataResults });
+      res.render("private-room", { data: dataResults });
     }
   );
 });

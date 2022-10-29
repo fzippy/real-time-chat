@@ -134,6 +134,17 @@ app.get("/welcome", authCookieMiddleware, (req, res) => {
   //   console.log(data);
   // });
 });
+app.get("/private-room", authCookieMiddleware, (req, res) => {
+  pool.query(
+    `SELECT * FROM users WHERE username = '${req.data.user}'`,
+    (err, results) => {
+      const dataResults = results[0];
+
+      res.render("public-room", { data: dataResults });
+    }
+  );
+});
+///////////////////////////////////////
 app.get("/public-room", authCookieMiddleware, (req, res) => {
   pool.query(
     `SELECT * FROM users WHERE username = '${req.data.user}'`,

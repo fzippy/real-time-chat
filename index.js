@@ -158,7 +158,14 @@ app.get("/public-room", authCookieMiddleware, (req, res) => {
 io.on("connection", (socket) => {
   // console.log(socket.id); //
   socket.on("addMSG", (data) => {
+    console.log(data);
+
     socket.broadcast.emit("recieveMSG", { recieve: data.msg, user: data.user }); //
+  });
+  socket.on("privateMSG", (data) => {
+    socket.join(data.room)
+    socket.to(data.room).emit("recievePri8", { recieve: data.msg, user: data.user }); //
+
   });
 });
 

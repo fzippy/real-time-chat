@@ -36,9 +36,9 @@
                     
                 </div>
                 <div style="display: flex; flex-direction: row;">
-                    <input type="text" id="roomVal" name="data" placeholder="Join room">
+                    <input type="text" id="roomVal" name="data2" placeholder="Join room">
 
-                    <input type="button" value="Join Room" class="button" id="button">
+                    <input type="button" value="Join Room" class="button" id="button2">
                 </div>
 
 
@@ -54,25 +54,25 @@
         const msgVal = document.getElementById("msgVal")
         const roomVal = document.getElementById("roomVal")
         const usernameRaw = document.getElementById("username")
-
+        const button2 = document.getElementById("button2")
         const arr = usernameRaw.innerText.split(" ")
         const user = arr[1]
-
         const addMessage = (user,msg)=>{
             $(".msg-conatiner ul").append(`<li>${user}: ${msg}</li>`)
         }
         button.addEventListener("click", ()=>{
             const msgdata = msgVal.value
-            const roomValData = roomVal.value
-
             addMessage(user,msgdata)
-            socket.emit('privateMSG',{msg:msgdata,user:user,room:roomValData})
-
+            socket.emit('privateMSG', {msg:msgdata,user:user,room:roomVal.value})
         })
-        socket.on("recievePri8", (data)=>{
-            console.log()
-            addMessage(data.user,data.recieve)
 
+        button2.addEventListener("click", ()=>{
+            socket.emit('join_room',{room:roomVal.value})
+        })
+
+        socket.on("recievePri8", (data)=>{
+            console.log(data)
+            addMessage(data.user,data.recieve)
         })
 
         // socket.on("connect", ()=>{

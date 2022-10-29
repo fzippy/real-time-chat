@@ -7,7 +7,11 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
-
+const ejs = require("ejs");
+const http = require("http");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+const io = new Server(server);
 const PORT = 3002;
 
 const pool = mysql.createPool({
@@ -18,9 +22,29 @@ const pool = mysql.createPool({
   database: "real-time-talk",
   debug: false,
 });
-
+const info = [
+  "a",
+  "b",
+  "c",
+  "d",
+  "a",
+  "b",
+  "c",
+  "d",
+  "a",
+  "b",
+  "c",
+  "d",
+  "a",
+  "b",
+  "c",
+  "d",
+];
 app.use(express.static(__dirname + "/public"));
 app.use(cookieParser());
+app.set("views", "public/views");
+
+app.set("view engine", "ejs");
 
 const urlencodedParser = bodyParser.urlencoded({ extended: false });
 app.get("/login", (req, res) => {
@@ -95,19 +119,42 @@ const authCookieMiddleware = (req, res, next) => {
   });
 };
 app.get("/welcome", authCookieMiddleware, (req, res) => {
-  res.sendFile(path.join(__dirname, "public/views/welcome.html"));
-  console.log(req.data);
-  const authCookie = req.cookies.accessToken;
+  console.log(req.data.user);
+  pool.query(
+    `SELECT * FROM users WHERE username = '${req.data.user}'`,
+    (err, results) => {
+      const dataResults = results[0];
+      res.render("welcome", { data: dataResults });
+    }
+  );
+
+  // const authCookie = req.cookies.accessToken;
 
   // jwt.verify(authCookie, process.env.JWT_SECRET_KEY, (err, data) => {
   //   console.log(data);
   // });
 });
+app.get("/public-room", authCookieMiddleware, (req, res) => {
+  pool.query(
+    `SELECT * FROM users WHERE username = '${req.data.user}'`,
+    (err, results) => {
+      const dataResults = results[0];
+
+      res.render("public-room", { data: dataResults });
+    }
+  );
+});
+io.on("connection", (socket) => {
+  // console.log(socket.id); //
+  socket.on("addMSG", (data) => {
+    socket.broadcast.emit("recieveMSG", { recieve: data.msg, user: data.user }); //
+  });
+});
+
 app.get("*", (req, res) => {
   // Here user can also design an
   // error page and render it
   res.send("<h1>Error 404: PAGE NOT FOUND</h1>");
 });
-app.listen(PORT, (req, res) => {
-  console.log(`listening on port:${PORT}`);
-});
+
+server.listen(PORT);

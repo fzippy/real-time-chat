@@ -28,14 +28,19 @@
                     <li></li>
                 </ul>
             </div>
-            <div style="display: flex; flex-direction: row;">
-                <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: column;">
+                <div style="display: flex; flex-direction: row;">
                     <input type="text" id="msgVal" name="data" placeholder="Send msg">
-                    <input type="text" id="roomVal" name="data" placeholder="Send msg">
+                    <input type="button" value="SEND" class="button" id="button">
+
                     
                 </div>
-                <input type="button" value="SEND" class="button" id="button">
-                <input type="button" value="Join Room" class="button" id="button">
+                <div style="display: flex; flex-direction: row;">
+                    <input type="text" id="roomVal" name="data" placeholder="Join room">
+
+                    <input type="button" value="Join Room" class="button" id="button">
+                </div>
+
 
             </div>
         </div>
@@ -47,20 +52,24 @@
         const socket = io();
         const button = document.getElementById("button")
         const msgVal = document.getElementById("msgVal")
+        const roomVal = document.getElementById("roomVal")
         const usernameRaw = document.getElementById("username")
+
         const arr = usernameRaw.innerText.split(" ")
         const user = arr[1]
-        console.log(user)
+
         const addMessage = (user,msg)=>{
             $(".msg-conatiner ul").append(`<li>${user}: ${msg}</li>`)
         }
         button.addEventListener("click", ()=>{
             const msgdata = msgVal.value
+            const roomValData = roomVal.value
+
             addMessage(user,msgdata)
-            socket.emit('addMSG',{msg:msgdata,user:user})
+            socket.emit('privateMSG',{msg:msgdata,user:user,room:roomValData})
 
         })
-        socket.on("recieveMSG", (data)=>{
+        socket.on("recievePri8", (data)=>{
             console.log()
             addMessage(data.user,data.recieve)
 
